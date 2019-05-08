@@ -1,0 +1,39 @@
+version: '3'
+services:
+  media_server:
+    build:
+      dockerfile: './server/media/Dockerfile'
+  control_server:
+    build:
+      dockerfile: './server/control/Dockerfile'
+  frontend_client:
+    build:
+      dockerfile: './client/frontend/Dockerfile'
+  robot_client:
+    build:
+      dockerfile: './client/robot/Dockerfile'
+  caddy:
+    image: abiosoft/caddy
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /opt/Caddyfile:/etc/Caddyfile
+      - caddy:/root/.caddy
+    environment:
+      ACME_AGREE: 'true'
+  netdata:
+    restart: always
+    hostname: netdata.example.org
+    image: netdata/netdata
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - apparmor:unconfined
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+volumes:
+  caddy:

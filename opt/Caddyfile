@@ -1,0 +1,4 @@
+netdata.example.org {
+  proxy / netdata:19999
+  tls admin@example.org
+}
