@@ -1,39 +1,67 @@
-version: '3'
-services:
-  media_server:
-    build:
-      dockerfile: './server/media/Dockerfile'
-  control_server:
-    build:
-      dockerfile: './server/control/Dockerfile'
-  frontend_client:
-    build:
-      dockerfile: './client/frontend/Dockerfile'
-  robot_client:
-    build:
-      dockerfile: './client/robot/Dockerfile'
-  caddy:
-    image: abiosoft/caddy
-    ports:
-      - 80:80
-      - 443:443
-    volumes:
-      - /opt/Caddyfile:/etc/Caddyfile
-      - caddy:/root/.caddy
-    environment:
-      ACME_AGREE: 'true'
-  netdata:
-    restart: always
-    hostname: netdata.example.org
-    image: netdata/netdata
-    cap_add:
-      - SYS_PTRACE
-    security_opt:
-      - apparmor:unconfined
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+version: '3.4'
 
-volumes:
+services:
   caddy:
+    image: "abiosoft/caddy:latest"
+    volumes:
+      - $HOME/.caddy:/root/.caddy  # to save certificates on disk
+      - ./caddy/Caddyfile:/etc/Caddyfile  # to mount custom Caddyfile
+    ports:
+      - "666:2015"
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - ss
+      - frontend
+    container_name: caddy_server
+    environment:
+      - DOMAIN_NAME=localhost
+      - TLS=off
+      - ACME_AGREE=false
+      - ENABLE_TELEMETRY=false
+      - SS_PORT=5000
+      - FRONTEND_PORT=5001
+    networks:
+      - caddy-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    environment: 
+      PORT: 5001
+    command: yarn start
+    #ports:
+    #  - "5001:80"
+    container_name: frontend
+    networks:
+      - caddy-net
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  ss:
+    build:
+      context: ./signal_server
+      dockerfile: Dockerfile
+    environment: 
+      PORT: 5000
+    command: yarn start
+    #ports:
+    #  - "5000:80"
+    container_name: ss
+    networks:
+      - caddy-net
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+networks:
+  caddy-net:
+    driver: bridge
