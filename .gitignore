@@ -13,3 +13,5 @@
 
 # dont save .env
 **.env
+
+.vscode
