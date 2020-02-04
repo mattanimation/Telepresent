@@ -1,0 +1,7 @@
+[submodule "clients/telepresent-py"]
+	path = clients/telepresent-py
+	url = https://github.com/mattanimation/telepresent-py.git
+
+[submodule "clients/telepresent-go"]
+	path = clients/telepresent-go
+	url = https://github.com/mattanimation/telepresent-go.git

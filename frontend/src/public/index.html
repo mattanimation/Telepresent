@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta charset="utf-8">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<title>Telepresent</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content="Telepresent is a remote connection to robots.">
+        <meta property="og:image" content="img/robot_head.png"/> 
+
+        <!-- bulma -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+        
+
+        <!-- font -->
+        <link rel='stylesheet' href='//cdn.jsdelivr.net/npm/hack-font@3.3.0/build/web/hack-subset.css'>
+        <!-- more font but for checkboxes... maybe not worth the loading overhead -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <!-- icons -->
+        <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.7.95/css/materialdesignicons.min.css" />
+
+        <link rel="stylesheet" href="css/overrides.css" />
+        <link rel="stylesheet" href="css/bulma-checkboxes.css">
+
+        <link rel="image_src" href="img/robot_head.png" />
+        
+        <style></style>
+	</head>
+	<body>
+
+        <section class="hero is-small is-dark is-primary is-bold">
+            <!-- Hero head: will stick at the top -->
+            <div class="hero-head">
+                <nav class="navbar">
+                <div class="container">
+                    <div class="navbar-brand">
+                        <span class="navbar-item" href="/">
+                            TELEPRESENT
+                        </span>
+                        <span class="icon is-large has-text-danger" id="gamepadStatus">
+                            <i class="mdi mdi-36px mdi-gamepad-variant-outline"></i>
+                        </span>
+                        <span class="icon is-large has-text-warning" id="signalServerStatus">
+                            <i class="mdi mdi-36px mdi-cloud-alert"></i>
+                        </span>
+                        <span class="navbar-burger burger" data-target="navbarMenuHeroA">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </span>
+                    </div>
+                    <div id="navbarMenuHeroA" class="navbar-menu">
+                        <div class="navbar-end">
+                            <a class="navbar-item" href="/">Home</a>
+                        </div>
+                    </div>
+                </div>
+                </nav>
+            </div>
+            
+            <!-- Hero content: will be in the middle -->
+            <div class="hero-body">
+                <div class="container has-text-centered">
+                <h1 class="title">
+                    Telepresent
+                </h1>
+                <h1 class="title">
+                    <span class="icon is-large">
+                        <i class="mdi mdi-48px mdi-gift-outline"></i>
+                    </span>
+                </h1>
+                <h2 class="sub-title">Helping get robots into the real world.</h2>
+                
+            </div>
+    
+        </section>
+
+        <section class="section">
+
+            <!--
+            <div class="container">
+                <div id="joyResult" style="color:#777"></div>
+                <div class="box" id="joyContainer" style="position: relative; top:0px; left: 0px; width:250px; height: 250px; border-radius: 75px;"></div>
+            </div> -->
+            <div class="container">
+                <div class="columns">
+                    <div class="column is-one-quater">
+                        <!-- <ul id='clientList'></ul> -->
+                        
+                        <aside class="menu">
+                            <p class="menu-label">
+                                Connected Clients
+                            </p>
+                            <ul class="menu-list" style="max-height: 400px; overflow-y:scroll;" id="clientList">
+                                <li><a>Dashboard</a></li>
+                                <li><a>Customers</a></li>
+                            </ul>
+                        </aside>
+                        <hr>
+                        <h4 class="is-size-4 has-text-centered">Connect</h4>
+                        <div class="field ">
+                            <div class="control is-expanded ">
+                                <input class="input is-info is-fullwidth" required pattern="^[a-zA-Z0-9_]*$" placeholder="Enter Username" type="text" id="loginInput" />
+                            </div>
+                            <div class="control">
+                                <button class="button is-primary is-fullwidth" id="loginBtn">Join</button>
+                            </div>
+                        </div>
+                    
+                    </div>
+                    <div class="column is-three-quarters">
+                        
+                        <!-- <div class="field is-horizontal">
+                                <div class="control">
+                                    <button class="button is-info" id="start" onclick="start()">Start</button>
+                                </div>
+                                <div class="control">
+                                    <button class="button is-danger" id="stop" onclick="stop()">Stop</button>
+                                </div>
+                            </div>-->
+                        <div class="container">
+                            <h2 class="is-size-2 has-text-centered">Connected Robots</h2>
+                            <div class="columns is-multiline" id="robotCardContainer"></div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container is-widescreen">
+                <h2 class="is-size-2 has-text-centered">Status</h2>
+                <h3 class='is-size-3'>State</h3>
+                <table class="table is-narrow is-bordered is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>Peer Connection State</th>
+                            <th>ICE Gathering State:</th>
+                            <th>ICE Connection State:</th>
+                            <th>Signaling State:</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th><span id="peer-connection-state">...</span></th>
+                            <th><span id="ice-gathering-state">...</span></th>
+                            <th><span id="ice-connection-state">...</span></th>
+                            <th><span id="signaling-state">...</span></th>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+        
+                <h3 class='is-size-3'>SDP</h3>
+                <div class="columns">
+                    <div class="column is-half">
+                        <h4 class='is-size-4'>Offer</h4>
+                        <pre id="offer-sdp"></pre>
+                    </div>
+                    <div class="column is-half">
+                        <h4 class='is-size-4'>Answer</h4>
+                        <pre id="answer-sdp"></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        
+        <div class="modal" id="robotSelectedModal">
+            <div class="modal-background"></div>
+            <div class="modal-content is-clipped">
+                <!-- video and controls -->
+              <div class="container">
+                  <h5 class="is-size-5 has-text-white" id="modalRobotId"><span>Viewing: </span>This Robot</h5>
+                <div id="media">
+                    <video id="video" poster="https://placehold.it/1280x720" autoplay></video>
+                    <audio id="audio" autoplay="true" controls style="width: 100%; opacity: 0.6; position: relative; top: -60px; float: left;" ></audio>
+                    <div class="loader-wrapper" id="rtcConnectionProgress"><div class="loader is-loading" ></div></div>
+                </div>
+                <!-- joystick -->
+                <div class="container" id="joyContainer">
+                    <div class="box">
+                        <p class="has-text-centered is-size-7">Click and /or Tap anywhere in this box to control robot with joystick.</p>
+                        <div id="zone_joystick" style="position: relative;">
+                            <div style="width: 250px; height: 250px;"></div>
+                        </div>
+                        <div id="debug" style="position: fixed; top:25px; left: 25px; z-index: 20; color: white;">
+                            <ul>
+                            <li class="position">
+                                position :
+                                <ul>
+                                <li class="x">x : <span class='data'></span></li>
+                                <li class="y">y : <span class='data'></span></li>
+                                </ul>
+                            </li>
+                            <li class="force">force : <span class='data'></span></li>
+                            <li class="pressure">pressure : <span class='data'></span></li>
+                            <li class="distance">distance : <span class='data'></span></li>
+                            <li class="angle">
+                                angle :
+                                <ul>
+                                <li class="radian">radian : <span class='data'></span></li>
+                                <li class="degree">degree : <span class='data'></span></li>
+                                </ul>
+                            </li>
+                            <li class="direction">
+                                direction :
+                                <ul>
+                                <li class="x">x : <span class='data'></span></li>
+                                <li class="y">y : <span class='data'></span></li>
+                                <li class="angle">angle : <span class='data'></span></li>
+                                </ul>
+                            </li>
+                            <li class="speed">
+                                speed :
+                                <ul>
+                                    <li class="linearSpeed">linear_speed : <span class='data'></span></li>
+                                    <li class="angularSpeed">anglular_speed : <span class='data'></span></li>
+                                </ul>
+                            </li>
+                            </ul>
+                            <div class="dump"></div>
+                        </div>
+                    </div>
+    
+                </div>
+                <!-- data channel-->
+                <h5 class="is-size-5">Data channel</h5>
+                <pre id="data-channel" style="height: 110px;"></pre>
+                
+              </div>
+            </div>
+            <button class="modal-close is-large" onclick=closeModal() aria-label="close"></button>
+        </div>
+
+        <!-- status notifications -->
+        <div id="notificationContainer" style="position: fixed; bottom: 25px; right: 25px; z-index: 101;"></div>
+
+		<!-- Footer -->
+		<footer id="footer" class="footer">
+			<div class="inner">
+                <p class="has-text-centered">&copy;<a href="https://retrowave.tech" target="_blank">Matt Murray</a> 2019-2020</p>
+            </div>
+		</footer>
+
+        <!-- Scripts -->
+        <script type="application/javascript" src="js/gamepad.js"></script>
+        <script type="application/javascript" src="js/nipple.js"></script>
+        <script type="application/javascript" src="js/utils.js"></script>
+        <script type="application/javascript" src="js/signalServerClient.js"></script>
+        <script type="application/javascript" src="js/telepresent.js"></script>
+	
+
+	</body>
+</html>

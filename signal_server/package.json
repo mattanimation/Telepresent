@@ -1,0 +1,17 @@
+{
+  "name": "ss",
+  "version": "1.0.0",
+  "description": "signal server",
+  "main": "ss.js",
+  "author": "Matt Murray",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "uuid": "^3.3.3",
+    "ws": "^7.2.1"
+  },
+  "scripts": {
+    "start": "node ss.js"
+  }
+}
